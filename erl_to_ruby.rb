@@ -52,7 +52,7 @@ def parse_first_term(str_to_parse)
   if open_str
     close_str = CLOSE_STRS[open_str]
     pos_open_str = str_to_parse.index(open_str)
-    pos_close_str = pos_close_str(str_to_parse,open_str)
+    pos_close_str = pos_close_str(str_to_parse,open_str).to_i
     term_str = str_to_parse[pos_open_str..(pos_close_str+close_str.length-1)]
     new_str_to_parse = str_to_parse[(pos_close_str+close_str.length), str.length]
   else
