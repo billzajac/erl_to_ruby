@@ -2,25 +2,21 @@ require 'pp'
 
 CLOSE_STRS  = {"["=>"]", "{"=>"}", '"'=>'"', "'"=>"'", '<<'=>'>>', "#Ref<"=>">", "<"=>">"}
 
-# This is a hack and probably always will be due to the lack of tuples in ruby
+# Look for proplists (any array in which all members are hashes)
 def array_to_proplist(arr)
-  # Check to see if the array has hashes in it
-  if arr.select {|x| x.is_a?(Hash)}.size > 0
+  # Check to see if the array has only hashes as members
+  if arr.is_a?(Array) and arr.select {|x| x.is_a?(Hash)}.size == arr.size
 
     # If so, then remove the outer array and move the hashes to a new top level hash
-    # Note that last bit...tuples of > 2 do not nicely translate into a hash, so there we go...ugh
-    new_hash = arr.reduce({}) {|acc,val|  val.is_a?(Hash) ? acc.merge(val) : acc.merge(val => true)}
+    new_hash = arr.reduce({}) {|acc,val|  acc.merge(val)}
 
-    # Now check the values of the new hash and recurse if necessary
-    new_hash.each do |k,v|
-      # Is it an array and if so, does it have hashes in it
-      if v.is_a?(Array) and v.select {|x| x.is_a?(Hash)}.size > 0
-        new_hash[k] = array_to_proplist(v)
-      else
-        new_hash[k] = v
-      end
-    end
+    # Now check and possibly update the values of the new hash (recursing into them if necessary)
+    new_hash.each {|k,v| new_hash[k] = array_to_proplist(v)}
+
+    # Return the new hash
+    new_hash
   else
+    # Nothing to do here, just return the array
     arr
   end
 end
