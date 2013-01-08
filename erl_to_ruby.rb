@@ -1,5 +1,3 @@
-require 'pp'
-
 CLOSE_STRS  = {"["=>"]", "{"=>"}", '"'=>'"', "'"=>"'", '<<'=>'>>', "#Ref<"=>">", "<"=>">"}
 
 # Look for proplists (any array in which all members are hashes)
@@ -207,6 +205,7 @@ end
 # # Get the current directory of the script being exectued and require the lib from there
 # this_dir = File.dirname(__FILE__)
 # require "#{this_dir}/erl_to_ruby"
+# require 'pp'
 #
 # pp erl_to_ruby("[{a,[{a_foo,'ABCDE',\"ABCDE\",<<\"ABCDE\">>},{a_bar,1,2,3}]},{b,[{b_foo,1,2,3},{b_bar,1,2,3}]}]")
 # pp erl_to_ruby(" {a,[{a_foo,'ABCDE',\"ABCDE\",<<\"ABCDE\">>}]} ")
