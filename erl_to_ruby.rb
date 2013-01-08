@@ -2,6 +2,29 @@ require 'pp'
 
 CLOSE_STRS  = {"["=>"]", "{"=>"}", '"'=>'"', "'"=>"'", '<<'=>'>>', "#Ref<"=>">", "<"=>">"}
 
+# This is a hack and probably always will be due to the lack of tuples in ruby
+def array_to_proplist(arr)
+  # Check to see if the array has hashes in it
+  if arr.select {|x| x.is_a?(Hash)}.size > 0
+
+    # If so, then remove the outer array and move the hashes to a new top level hash
+    # Note that last bit...tuples of > 2 do not nicely translate into a hash, so there we go...ugh
+    new_hash = arr.reduce({}) {|acc,val|  val.is_a?(Hash) ? acc.merge(val) : acc.merge(val => true)}
+
+    # Now check the values of the new hash and recurse if necessary
+    new_hash.each do |k,v|
+      # Is it an array and if so, does it have hashes in it
+      if v.is_a?(Array) and v.select {|x| x.is_a?(Hash)}.size > 0
+        new_hash[k] = array_to_proplist(v)
+      else
+        new_hash[k] = v
+      end
+    end
+  else
+    arr
+  end
+end
+
 def pos_close_str(str, open_str)
   close_str = CLOSE_STRS[open_str]
   if open_str == close_str
@@ -20,10 +43,13 @@ def pos_close_str(str, open_str)
 end
 
 def erl_term(str)
+# $stderr.puts "STR1:#{str.inspect}:" # DEBUG
   str.strip!
+# $stderr.puts "STR2:#{str.inspect}:" # DEBUG
   term_open_str = str[/^(\[|\{|\"|\'|<<|#Ref|<)/,1]
   if term_open_str.nil? # integer,float, or, atom
     matches = /^(([-0-9\.]+)|([a-z][a-z0-9_]*))/.match(str)
+# $stderr.puts "MATCHES:#{matches.inspect}:" # DEBUG
     term = case 
       when (matches[2] && str[/\./]) then str.to_f
       when matches[2] then str.to_i
@@ -169,10 +195,13 @@ class ErlTuple < ErlEnumeration
 end
 
 def erl_to_ruby(str)
-str.gsub!(/[\n\r]/,"")
+  str.gsub!(/[\n\r]/,"")
   erl_obj = erl_term(str)
   erl_obj.parse if erl_obj.is_a?(ErlEnumeration)
-  erl_obj.to_ruby
+  ruby_obj = erl_obj.to_ruby
+
+  # Final hack to de-listify nested hashes in tuples
+  array_to_proplist(ruby_obj) if erl_obj.is_a?(ErlEnumeration)
 end
 
 #
