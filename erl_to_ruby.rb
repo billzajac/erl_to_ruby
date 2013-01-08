@@ -200,11 +200,16 @@ def erl_to_ruby(str)
   array_to_proplist(ruby_obj) if erl_obj.is_a?(ErlEnumeration)
 end
 
+#---------------------------------------
+# EXAMPLE
+#---------------------------------------
+# # Assumption: this lib is in the same directory as your script
+# # Get the current directory of the script being exectued and require the lib from there
+# this_dir = File.dirname(__FILE__)
+# require "#{this_dir}/erl_to_ruby"
 #
-#example
-#
-#pp erl_to_ruby("[{a,[{a_foo,'ABCDE',\"ABCDE\",<<\"ABCDE\">>},{a_bar,1,2,3}]},{b,[{b_foo,1,2,3},{b_bar,1,2,3}]}]")
-#pp erl_to_ruby(" {a,[{a_foo,'ABCDE',\"ABCDE\",<<\"ABCDE\">>}]} ")
-#pp erl_to_ruby("   <<12,13,14,15,16,17,18,\"abcdefg\">> ")
-#pp erl_to_ruby("{true,<<\"o_e-13885-2\">>,expiry,          {63487411200,63519123599,[{offer,9434},{offer_url,none}]}}")
-#pp erl_to_ruby( "[{sub,<<\"JCT\">>}, {sub2,none}]")
+# pp erl_to_ruby("[{a,[{a_foo,'ABCDE',\"ABCDE\",<<\"ABCDE\">>},{a_bar,1,2,3}]},{b,[{b_foo,1,2,3},{b_bar,1,2,3}]}]")
+# pp erl_to_ruby(" {a,[{a_foo,'ABCDE',\"ABCDE\",<<\"ABCDE\">>}]} ")
+# pp erl_to_ruby("   <<12,13,14,15,16,17,18,\"abcdefg\">> ")
+# pp erl_to_ruby("{true,<<\"o_e-13885-2\">>,expiry,          {63487411200,63519123599,[{offer,9434},{offer_url,none}]}}")
+# pp erl_to_ruby( "[{sub,<<\"JCT\">>}, {sub2,none}]")
